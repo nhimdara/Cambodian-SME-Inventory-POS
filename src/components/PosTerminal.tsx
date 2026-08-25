@@ -8,7 +8,8 @@ import {
   CheckCircle2, 
   ShoppingBag,
   Filter,
-  X
+  X,
+  Package
 } from 'lucide-react';
 import { Product, CartItem, Settings, Language } from '../types';
 import { convertUsdToKhr, formatUSD, formatKHR } from '../utils/khqr';
@@ -90,9 +91,9 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
   };
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 space-y-4">
+    <div className="flex-1 flex flex-col min-w-0 h-full min-h-0 space-y-3">
       {/* Top Search & Filter Bar */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-3 sm:p-4 shadow-sm">
+      <div className="shrink-0 bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-3.5 shadow-xs">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           {/* Main Search Input */}
           <div className="relative flex-1">
@@ -129,7 +130,7 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
         </div>
 
         {/* Category Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pt-3 pb-1 no-scrollbar">
+        <div className="flex items-center gap-1.5 overflow-x-auto pt-3 pb-0.5 no-scrollbar">
           <button
             id="cat-all"
             onClick={() => setSelectedCategory('ALL')}
@@ -162,10 +163,10 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
       </div>
 
       {/* Product Grid */}
-      <div className="flex-1 overflow-y-auto pr-1">
+      <div className="flex-1 overflow-y-auto pr-1 min-h-0 pb-4">
         {filteredProducts.length === 0 ? (
-          <div className="bg-white border border-dashed border-slate-300 rounded-2xl p-12 text-center shadow-sm">
-            <div className="w-16 h-16 rounded-full bg-slate-100 mx-auto flex items-center justify-center text-slate-400 mb-3">
+          <div className="bg-white/80 backdrop-blur-sm border border-dashed border-slate-300 rounded-3xl p-12 text-center shadow-xs">
+            <div className="w-16 h-16 rounded-2xl bg-indigo-50 mx-auto flex items-center justify-center text-indigo-500 mb-3 shadow-inner">
               <Search className="w-8 h-8" />
             </div>
             <h3 className="text-base font-bold text-slate-800 mb-1">No products found</h3>
@@ -174,7 +175,7 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 pb-6">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-3.5 pb-6">
             {filteredProducts.map((product) => {
               const priceKhr = convertUsdToKhr(product.priceUsd, settings.exchangeRate);
               const isOutOfStock = product.stockQty <= 0;
@@ -192,75 +193,104 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
                       onAddToCart(product);
                     }
                   }}
-                  className={`group relative bg-white border rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between transition-all duration-150 select-none shadow-sm ${
+                  className={`group relative bg-white border rounded-2xl p-3 flex flex-col justify-between transition-all duration-200 select-none ${
                     isOutOfStock
-                      ? 'border-slate-200 opacity-50 cursor-not-allowed bg-slate-50'
+                      ? 'border-slate-200/70 opacity-60 cursor-not-allowed bg-slate-50'
                       : remainingStock <= 0
-                      ? 'border-amber-300 opacity-80 cursor-not-allowed bg-amber-50/20'
+                      ? 'border-amber-300/80 opacity-80 cursor-not-allowed bg-amber-50/30'
                       : inCartQty > 0
-                      ? 'border-indigo-500 ring-2 ring-indigo-500/20 cursor-pointer active:scale-[0.98]'
+                      ? 'border-indigo-500 ring-2 ring-indigo-500/20 shadow-md shadow-indigo-500/10 cursor-pointer'
                       : isLowStock
-                      ? 'border-slate-200 hover:border-amber-400 hover:shadow-md cursor-pointer active:scale-[0.98]'
-                      : 'border-slate-200 hover:border-indigo-400 hover:shadow-md cursor-pointer active:scale-[0.98]'
+                      ? 'border-slate-200 hover:border-amber-400 hover:shadow-lg hover:shadow-amber-500/10 cursor-pointer hover:-translate-y-0.5'
+                      : 'border-slate-200 hover:border-indigo-400 hover:shadow-lg hover:shadow-indigo-500/10 cursor-pointer hover:-translate-y-0.5'
                   }`}
                 >
-                  {/* Top Badges */}
-                  <div className="flex items-start justify-between gap-1 mb-2">
-                    <span className="text-[11px] font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md font-medium">
-                      {product.sku}
-                    </span>
+                  {/* Card Image Container */}
+                  <div className="relative h-32 sm:h-36 w-full bg-slate-100 rounded-xl overflow-hidden mb-2.5 shadow-inner flex items-center justify-center">
+                    {product.image && (product.image.startsWith('http') || product.image.startsWith('/') || product.image.startsWith('data:')) ? (
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          const fallback = e.currentTarget.parentElement?.querySelector('.img-fallback') as HTMLElement;
+                          if (fallback) fallback.style.display = 'flex';
+                        }}
+                        className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500 ease-out"
+                        loading="lazy"
+                      />
+                    ) : null}
+                    <div className={`img-fallback w-full h-full ${product.image && (product.image.startsWith('http') || product.image.startsWith('/') || product.image.startsWith('data:')) ? 'hidden' : 'flex'} items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 text-slate-400`}>
+                      {product.image && !product.image.startsWith('http') && !product.image.startsWith('/') ? (
+                        <span className="text-4xl select-none">{product.image}</span>
+                      ) : (
+                        <Package className="w-10 h-10 text-slate-300" />
+                      )}
+                    </div>
 
-                    {/* Stock Status Badge */}
-                    {isOutOfStock ? (
-                      <span className="text-[10px] font-bold text-slate-500 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded uppercase">
-                        {t.outOfStock}
+                    {/* Gradient Overlay for Top Badges */}
+                    <div className="absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-black/40 to-transparent pointer-events-none" />
+
+                    {/* SKU & Category badge top left */}
+                    <div className="absolute top-2 left-2 flex items-center gap-1">
+                      <span className="text-[10px] font-mono-num font-bold text-white bg-black/50 backdrop-blur-md px-2 py-0.5 rounded-md shadow-xs">
+                        {product.sku}
                       </span>
-                    ) : isLowStock ? (
-                      <span className="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded flex items-center gap-1">
-                        <AlertTriangle className="w-3 h-3 text-amber-600" />
-                        <span>{product.stockQty} left</span>
-                      </span>
-                    ) : (
-                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
-                        {product.stockQty} in stock
-                      </span>
-                    )}
+                    </div>
+
+                    {/* Stock Status Badge top right */}
+                    <div className="absolute top-2 right-2">
+                      {isOutOfStock ? (
+                        <span className="text-[10px] font-bold text-white bg-red-600/90 backdrop-blur-md px-2 py-0.5 rounded-md shadow-xs flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
+                          {t.outOfStock}
+                        </span>
+                      ) : isLowStock ? (
+                        <span className="text-[10px] font-bold text-amber-950 bg-amber-400/95 backdrop-blur-md px-2 py-0.5 rounded-md shadow-xs flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-950 animate-pulse"></span>
+                          {product.stockQty} left
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-bold text-white bg-emerald-600/90 backdrop-blur-md px-2 py-0.5 rounded-md shadow-xs flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-200"></span>
+                          {product.stockQty}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
-                  {/* Icon & Names */}
-                  <div className="my-1">
-                    <div className="h-20 bg-slate-50 border border-slate-100 rounded-xl mb-3 flex items-center justify-center text-3xl group-hover:scale-105 transition-transform">
-                      {product.image || '📦'}
-                    </div>
-                    <h3 className="font-bold text-sm sm:text-base text-slate-900 line-clamp-1 leading-snug">
+                  {/* Product Titles */}
+                  <div className="px-0.5 mb-2">
+                    <h3 className="font-bold text-sm text-slate-900 line-clamp-1 leading-snug group-hover:text-indigo-600 transition-colors">
                       {product.name}
                     </h3>
                     {product.nameKh && (
-                      <p className="font-khmer text-xs text-indigo-600 font-medium line-clamp-1 mt-0.5">
+                      <p className="font-khmer text-xs text-slate-500 font-medium line-clamp-1 mt-0.5">
                         {product.nameKh}
                       </p>
                     )}
                   </div>
 
-                  {/* Dual Currency Price & Add Action */}
-                  <div className="pt-3 border-t border-slate-100 flex items-end justify-between gap-2 mt-auto">
+                  {/* Pricing and Action Button */}
+                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-2 mt-auto px-0.5">
                     <div>
-                      <div className="text-base sm:text-lg font-bold font-mono text-indigo-700 tracking-tight leading-tight">
+                      <div className="text-base font-extrabold font-mono-num text-slate-900 tracking-tight leading-tight">
                         {formatUSD(product.priceUsd)}
                       </div>
-                      <div className="text-xs font-bold font-mono text-slate-500 leading-tight">
+                      <div className="text-[11px] font-bold font-mono-num text-slate-400 leading-tight">
                         {formatKHR(priceKhr)}
                       </div>
                     </div>
 
-                    {/* In-cart count or Quick Add Button */}
+                    {/* Quick Add Button */}
                     <div className="shrink-0">
                       {inCartQty > 0 ? (
-                        <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-md shadow-indigo-600/20">
-                          {inCartQty}
+                        <div className="h-8 px-2.5 rounded-xl bg-indigo-600 text-white font-bold font-mono-num text-xs flex items-center justify-center gap-1 shadow-md shadow-indigo-600/30">
+                          <span>{inCartQty}</span>
+                          <Plus className="w-3 h-3" />
                         </div>
                       ) : (
-                        <div className="w-8 h-8 rounded-xl bg-slate-100 group-hover:bg-indigo-600 group-hover:text-white text-slate-700 flex items-center justify-center transition-colors">
+                        <div className="w-8 h-8 rounded-xl bg-slate-100 group-hover:bg-indigo-600 group-hover:text-white text-slate-600 flex items-center justify-center transition-all duration-200 shadow-xs group-hover:shadow-md group-hover:shadow-indigo-600/30">
                           <Plus className="w-4 h-4" />
                         </div>
                       )}

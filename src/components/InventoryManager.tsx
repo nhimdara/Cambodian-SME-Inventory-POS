@@ -336,12 +336,23 @@ export const InventoryManager: React.FC<InventoryManagerProps> = ({
                         isOut ? "bg-rose-50/40" : isLow ? "bg-amber-50/40" : ""
                       }`}
                     >
-                      {/* Product Name & Icon */}
+                      {/* Product Name & Photo */}
                       <td className="p-3.5">
-                        <div className="flex items-center gap-2.5">
-                          <span className="w-9 h-9 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center text-lg shrink-0">
-                            {p.image || "📦"}
-                          </span>
+                        <div className="flex items-center gap-3">
+                          <div className="w-11 h-11 bg-slate-100 border border-slate-200 rounded-xl overflow-hidden flex items-center justify-center shrink-0 shadow-xs">
+                            {p.image && (p.image.startsWith('http') || p.image.startsWith('/') || p.image.startsWith('data:')) ? (
+                              <img
+                                src={p.image}
+                                alt={p.name}
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                              />
+                            ) : (
+                              <span className="text-lg">
+                                {p.image && p.image.length <= 4 ? p.image : <Package className="w-5 h-5 text-slate-300" />}
+                              </span>
+                            )}
+                          </div>
                           <div>
                             <div className="font-bold text-slate-900 text-sm">
                               {p.name}
@@ -495,39 +506,69 @@ export const InventoryManager: React.FC<InventoryManagerProps> = ({
               className="p-4 sm:p-6 space-y-4 bg-white"
             >
               <div className="grid grid-cols-2 gap-3">
-                {/* Emoji/Icon */}
-                <div className="col-span-2 sm:col-span-1">
+                {/* Product Photo URL */}
+                <div className="col-span-2">
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Product Icon / Emoji
+                    Product Image (Photo URL)
                   </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={formImage}
-                      onChange={(e) => setFormImage(e.target.value)}
-                      className="w-14 text-center text-xl py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:bg-white focus:outline-none focus:border-indigo-500"
-                    />
-                    <div className="flex items-center gap-1">
-                      {[
-                        "☕",
-                        "🍚",
-                        "🍺",
-                        "💧",
-                        "🥔",
-                        "🍜",
-                        "🥥",
-                        "🥖",
-                        "🥭",
-                      ].map((em) => (
+                  <div className="flex items-center gap-3">
+                    <div className="w-16 h-16 bg-slate-100 border border-slate-300 rounded-2xl overflow-hidden flex items-center justify-center shrink-0 shadow-inner">
+                      {formImage && (formImage.startsWith('http') || formImage.startsWith('/') || formImage.startsWith('data:')) ? (
+                        <img
+                          src={formImage}
+                          alt="Preview"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Package className="w-8 h-8 text-slate-400" />
+                      )}
+                    </div>
+                    <div className="flex-1 space-y-1.5">
+                      <input
+                        type="url"
+                        value={formImage}
+                        onChange={(e) => setFormImage(e.target.value)}
+                        placeholder="https://images.unsplash.com/... or paste image link"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-indigo-500 font-mono"
+                      />
+                      <div className="flex items-center gap-1.5 overflow-x-auto text-[11px]">
+                        <span className="text-slate-400 font-medium whitespace-nowrap">Presets:</span>
                         <button
-                          key={em}
                           type="button"
-                          onClick={() => setFormImage(em)}
-                          className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-base flex items-center justify-center cursor-pointer border border-slate-200"
+                          onClick={() => setFormImage("https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?auto=format&fit=crop&w=400&q=80")}
+                          className="px-2 py-0.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md font-medium whitespace-nowrap cursor-pointer"
                         >
-                          {em}
+                          Coffee
                         </button>
-                      ))}
+                        <button
+                          type="button"
+                          onClick={() => setFormImage("https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=400&q=80")}
+                          className="px-2 py-0.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md font-medium whitespace-nowrap cursor-pointer"
+                        >
+                          Rice
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setFormImage("https://images.unsplash.com/photo-1608270191772-a16df14545ea?auto=format&fit=crop&w=400&q=80")}
+                          className="px-2 py-0.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md font-medium whitespace-nowrap cursor-pointer"
+                        >
+                          Drink
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setFormImage("https://images.unsplash.com/photo-1566478989037-eec170784d0b?auto=format&fit=crop&w=400&q=80")}
+                          className="px-2 py-0.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md font-medium whitespace-nowrap cursor-pointer"
+                        >
+                          Snack
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setFormImage("https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=400&q=80")}
+                          className="px-2 py-0.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md font-medium whitespace-nowrap cursor-pointer"
+                        >
+                          Fruit
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>

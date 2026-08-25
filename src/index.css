@@ -9,7 +9,12 @@
 }
 
 .font-khmer {
-  font-family: 'Kantumruy Pro', sans-serif;
+  font-family: 'Kantumruy Pro', 'Battambang', 'Khmer OS Battambang', 'Siemreap', sans-serif;
+  line-height: 1.5;
+}
+
+.font-receipt {
+  font-family: 'Plus Jakarta Sans', 'Kantumruy Pro', 'Battambang', system-ui, -apple-system, sans-serif;
 }
 
 .font-mono-num {
@@ -30,13 +35,15 @@
   }
   #thermal-receipt-printable {
     position: absolute;
-    left: 0;
+    left: 50%;
+    transform: translateX(-50%);
     top: 0;
-    width: 100%;
     margin: 0;
-    padding: 0;
+    padding: 12px;
     background: white !important;
     color: black !important;
+    box-shadow: none !important;
+    border: none !important;
   }
   #generate-report-modal {
     position: absolute;
@@ -53,7 +60,7 @@
     color: black !important;
   }
   @page {
-    margin: 1cm;
+    margin: 0;
     size: auto;
   }
 }
