@@ -1,0 +1,6 @@
+{
+  "name": "Cambodian SME Inventory & POS",
+  "description": "Smart point-of-sale and inventory system with dual-currency (USD & KHR), Bakong KHQR generator, thermal receipt printing, and stock alerts.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
